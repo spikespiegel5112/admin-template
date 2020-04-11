@@ -1,11 +1,14 @@
 <template>
-  <div id="app">
-    <router-view />
-  </div>
+    <div>
+        <router-view />
+    </div>
 </template>
 
 <script>
-export default  {
-  name:  'App'
+export default {
+    name: 'App',
+    created() {
+        document.querySelector('.loading_container').style.display = 'none'
+    }
 }
 </script>
