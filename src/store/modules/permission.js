@@ -24,35 +24,53 @@ const permission = {
           functionaility: []
         },
       }, {
-        "name": "baseData",
-        "path": "/baseData",
-        // "redirect": "noRedirect",
-        component: () => import("@/views/Dashboard.vue"),
+        "name": "merchant",
+        "path": "/merchant",
+        component: InnerLayout,
         // "alwaysShow": true,
-        hidden: true,
         configurable: false,
         "meta": {
-          "title": "基础数据",
+          "title": "商户管理",
           "icon": "gear",
           functionaility: []
         },
+        children: [{
+          "name": "merchantManagement",
+          "path": "/merchantmanagement",
+          component: () => import("@/views/Merchant/MerchantManagement.vue"),
+          configurable: false,
+          "meta": {
+            "title": "商户列表",
+            "icon": "gear",
+            functionaility: []
+          },
+        }]
       }, {
-        "name": "roles",
-        "path": "/roles",
-        // "redirect": "noRedirect",
+        "name": "user",
+        "path": "/user",
         component: InnerLayout,
         // "alwaysShow": true,
         "meta": {
-          "title": "角色权限",
+          "title": "用户管理",
           "icon": "authority",
           functionaility: []
         },
         "children": [{
+          "name": "userManagement",
+          "path": "usermanagement",
+          component: () => import("@/views/Authority/UserManagement.vue"),
+          alwaysHidden: true,
+          "meta": {
+            "title": "用户列表",
+            "icon": "secretchat",
+            functionaility: ['query', 'save', '']
+          }
+        }, {
           "name": "rolesManagement",
           "path": "roles-management",
           component: () => import("@/views/Authority/RolesManagement.vue"),
           "meta": {
-            "title": "角色管理",
+            "title": "角色列表",
             "icon": "user",
             functionaility: ['query', 'create']
           }
@@ -72,7 +90,7 @@ const permission = {
           component: () => import("@/views/Authority/AuthorityManagement.vue"),
           configurable: true,
           "meta": {
-            "title": "权限配置",
+            "title": "权限列表",
             "icon": "secretchat",
             functionaility: ['query', 'save']
 
@@ -89,7 +107,7 @@ const permission = {
             functionaility: ['query', 'save', '']
 
           }
-     
+
         }]
       }]
     }],

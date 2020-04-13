@@ -8,14 +8,32 @@ import {
 } from 'element-ui'
 import store from '@/store/store'
 import {
-  getToken
+  getToken,
+  getCookie
 } from '@/utils/auth'
+function getSessionId() {
+  var c_name = 'JSESSIONID';
+  debugger
 
+  if (document.cookie.length > 0) {
+
+    c_start = document.cookie.indexOf(c_name + "=")
+    if (c_start != -1) {
+      c_start = c_start + c_name.length + 1
+      c_end = document.cookie.indexOf(";", c_start)
+      if (c_end == -1) c_end = document.cookie.length
+      return unescape(document.cookie.substring(c_start, c_end));
+    }
+  }
+}
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 // 创建axios实例
 const service = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分
-  baseURL: process.env.VUE_APP_BASE_API,
+  // baseURL: process.env.VUE_APP_BASE_API,
+  baseURL: '/api',
+  // baseURL: 'http://122.112.224.131:8090',
+
   // 超时
   timeout: 10000,
   withCredentials: true
@@ -23,9 +41,16 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(
   config => {
-    if (getToken()) {
-      config.headers['Authorization'] = 'Bearer ' + getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+    // if (getToken()) {
+    //   config.headers['Authorization'] = 'Bearer ' + getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+    // }
+    if (getCookie()) {
+      // config.headers['Cookie'] = 'Bearer ' + getCookie() // 让每个请求携带自定义token 请根据实际情况自行修改
     }
+    let sessionId = getSessionId()
+
+    config.headers['Cookie'] = 'JSESSIONID=' + getSessionId() // 让每个请求携带自定义token 请根据实际情况自行修改
+
     return config
   },
   error => {
@@ -43,7 +68,7 @@ service.interceptors.response.use(res => {
   //   return res
   // }
   let result
-  const code = res.data ? res.data.code : undefined
+  const code = res.data.respCode
   const hadnleLogout = () => {
     MessageBox.confirm(
       '登录状态已过期，您可以继续留在该页面，或者重新登录',
@@ -83,36 +108,9 @@ service.interceptors.response.use(res => {
   }
 
   switch (code) {
-    case Number('-1'):
-      return Promise.reject(res.data.msg)
-      break
-    case 99999:
-      return Promise.reject(res.data.msg)
-      break
-    case 99998:
-      // debugger
-      result = res.data
-      if (store.state.user.login) {
-        store.commit('setLogin', false)
-        handleLogout2()
-      }
-      break
-    case 401:
-      result = res.data
-      if (store.state.user.login) {
-        store.commit('setLogin', false)
-        handleLogout2()
-      }
-      break
-    case 0:
-      result = res.data
-      // if (store.state.user.login) {
-      //   // logedOutFlag = true
-      //   debugger
-
-      //   store.commit('setLogin', false)
-      //   handleLogout2()
-      // }
+    case '01':
+      result = res.data.data
+      return Promise.reject(res.data.respMsg)
       break
     default:
       result = res.data
